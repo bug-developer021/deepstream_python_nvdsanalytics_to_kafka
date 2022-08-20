@@ -75,7 +75,7 @@ spec:
   ports:
     - name: notebook-port
       protocol: TCP
-      port: 80
+      port: 8888
       targetPort: 8888
     - name: rtsp-port
       protocol: TCP

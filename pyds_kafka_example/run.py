@@ -18,11 +18,9 @@
 ################################################################################
 
 import sys
-
-sys.path.append('../')
 import gi
 import configparser
-gi.require_version('Gst', '1.0')
+gi.require_version("Gst", "1.0")
 from gi.repository import GLib, Gst
 import sys
 from optparse import OptionParser
@@ -51,6 +49,7 @@ no_display = False
 PGIE_CONFIG_FILE = "dstest4_pgie_config.txt"
 MSCONV_CONFIG_FILE = "dstest4_msgconv_config.txt"
 
+TRACKER_CONFIG_FILE = "dsnvanalytics_tracker_config.txt"
 pgie_classes_str = ["Vehicle", "TwoWheeler", "Person", "Roadsign"]
 
 
@@ -89,7 +88,7 @@ def meta_free_func(data, user_data):
     srcmeta = pyds.NvDsEventMsgMeta.cast(user_meta.user_meta_data)
 
     # pyds.free_buffer takes C address of a buffer and frees the memory
-    # It's a NOP if the address is NULL
+    # It"s a NOP if the address is NULL
     pyds.free_buffer(srcmeta.ts)
 
     if srcmeta.objSignature.size > 0:
@@ -162,26 +161,20 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
         while l_user:
             try:
                 user_meta = pyds.NvDsUserMeta.cast(l_user.data)
-                if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type('NVIDIA.DSANALYTICSFRAME.USER_META'):
+                if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type("NVIDIA.DSANALYTICSFRAME.USER_META"):
                     user_meta_data = pyds.NvDsAnalyticsFrameMeta.cast(
                         user_meta.user_meta_data)
 
-                    if user_meta_data.objInROIcnt: print("Objs in ROI: {0}".format(user_meta_data.objInROIcnt))                    
                     if user_meta_data.objLCCumCnt: print("Linecrossing Cumulative: {0}".format(user_meta_data.objLCCumCnt))
                     if user_meta_data.objLCCurrCnt: print("Linecrossing Current Frame: {0}".format(user_meta_data.objLCCurrCnt))
-                    if user_meta_data.ocStatus: print("Overcrowding status: {0}".format(user_meta_data.ocStatus))
 
 
-                    # objects in ROI
-                    obj_in_ROI_cnt = user_meta_data.objInROIcnt
                     # linecrossing cumulative
                     obj_lc_cum_cnt = user_meta_data.objLCCumCnt
                     # linecrossing current frame
                     obj_lc_curr_cnt = user_meta_data.objLCCurrCnt
-                    # overcrowding status
-                    ov_status = user_meta_data.ocStatus
-                
 
+            
                     # Ideally NVDS_EVENT_MSG_META should be attached to buffer by the
                     # component implementing detection / recognition logic.
                     # Here it demonstrates how to use / attach that meta data.
@@ -192,17 +185,15 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
                     # reference to it. The underlying memory is not manged by
                     # Python so that downstream plugins can access it. Otherwise
                     # the garbage collector will free it when this probe exits.
-
-                    if frame_number % 30 == 0:
+                    curr_cnt_sum = sum([ obj_lc_curr_cnt[i] for i in obj_lc_curr_cnt])
+                    # if frame_number % 30 == 0:
+                    if curr_cnt_sum > 0:
                         msg_meta = pyds.alloc_nvds_event_msg_meta()
-                        msg_meta.sensorStr = 'device_test'
-                        if source_id:  msg_meta.source_id = source_id
-                        if obj_lc_curr_cnt.get('straight'):  msg_meta.lc_curr_straight = obj_lc_curr_cnt['straight']
-                        if obj_lc_curr_cnt.get('left'):  msg_meta.lc_curr_left = obj_lc_curr_cnt['left']
-                        if obj_lc_curr_cnt.get('right'):  msg_meta.lc_curr_right = obj_lc_curr_cnt['right']
-                        if obj_lc_cum_cnt.get('straight') :  msg_meta.lc_cum_straight = obj_lc_cum_cnt['straight'] 
-                        if obj_lc_cum_cnt.get('left'):  msg_meta.lc_cum_left = obj_lc_cum_cnt['left']
-                        if obj_lc_cum_cnt.get('right'):  msg_meta.lc_cum_right = obj_lc_cum_cnt['right']
+                        # you can assign your own device ID here
+                        msg_meta.sensorStr = "device_test"
+
+                        if obj_lc_curr_cnt.get("straight"):  msg_meta.lc_curr_straight = obj_lc_curr_cnt["straight"]
+                        if obj_lc_cum_cnt.get("straight") :  msg_meta.lc_cum_straight = obj_lc_cum_cnt["straight"] 
 
                         msg_meta = generate_event_msg_meta(msg_meta)
                         user_event_meta = pyds.nvds_acquire_user_meta_from_pool(
@@ -269,10 +260,12 @@ def main(args):
     if not decoder:
         sys.stderr.write(" Unable to create Nvv4l2 Decoder \n")
 
+    print("Creating Streammux \n")
     streammux = Gst.ElementFactory.make("nvstreammux", "Stream-muxer")
     if not streammux:
         sys.stderr.write(" Unable to create NvStreamMux \n")
 
+    print("Creating Pgie \n")
     pgie = Gst.ElementFactory.make("nvinfer", "primary-inference")
     if not pgie:
         sys.stderr.write(" Unable to create pgie \n")
@@ -340,51 +333,51 @@ def main(args):
             sys.stderr.write(" Unable to create egl sink \n")
 
     print("Playing file %s " % input_file)
-    source.set_property('location', input_file)
-    streammux.set_property('width', 1920)
-    streammux.set_property('height', 1080)
-    streammux.set_property('batch-size', 1)
-    streammux.set_property('batched-push-timeout', 4000000)
-    pgie.set_property('config-file-path', PGIE_CONFIG_FILE)
+    source.set_property("location", input_file)
+    streammux.set_property("width", MUXER_OUTPUT_WIDTH)
+    streammux.set_property("height", MUXER_OUTPUT_HEIGHT)
+    streammux.set_property("batch-size", 1)
+    streammux.set_property("batched-push-timeout", 40000)
+    pgie.set_property("config-file-path", PGIE_CONFIG_FILE)
 
 
     #Set properties of tracker
     config = configparser.ConfigParser()
-    config.read('dsnvanalytics_tracker_config.txt')
+    config.read(TRACKER_CONFIG_FILE)
     config.sections()
 
-    for key in config['tracker']:
-        if key == 'tracker-width' :
-            tracker_width = config.getint('tracker', key)
-            tracker.set_property('tracker-width', tracker_width)
-        if key == 'tracker-height' :
-            tracker_height = config.getint('tracker', key)
-            tracker.set_property('tracker-height', tracker_height)
-        if key == 'gpu-id' :
-            tracker_gpu_id = config.getint('tracker', key)
-            tracker.set_property('gpu_id', tracker_gpu_id)
-        if key == 'll-lib-file' :
-            tracker_ll_lib_file = config.get('tracker', key)
-            tracker.set_property('ll-lib-file', tracker_ll_lib_file)
-        if key == 'll-config-file' :
-            tracker_ll_config_file = config.get('tracker', key)
-            tracker.set_property('ll-config-file', tracker_ll_config_file)
-        if key == 'enable-batch-process' :
-            tracker_enable_batch_process = config.getint('tracker', key)
-            tracker.set_property('enable_batch_process', tracker_enable_batch_process)
-        if key == 'enable-past-frame' :
-            tracker_enable_past_frame = config.getint('tracker', key)
-            tracker.set_property('enable_past_frame', tracker_enable_past_frame)
+    for key in config["tracker"]:
+        if key == "tracker-width" :
+            tracker_width = config.getint("tracker", key)
+            tracker.set_property("tracker-width", tracker_width)
+        if key == "tracker-height" :
+            tracker_height = config.getint("tracker", key)
+            tracker.set_property("tracker-height", tracker_height)
+        if key == "gpu-id" :
+            tracker_gpu_id = config.getint("tracker", key)
+            tracker.set_property("gpu_id", tracker_gpu_id)
+        if key == "ll-lib-file" :
+            tracker_ll_lib_file = config.get("tracker", key)
+            tracker.set_property("ll-lib-file", tracker_ll_lib_file)
+        if key == "ll-config-file" :
+            tracker_ll_config_file = config.get("tracker", key)
+            tracker.set_property("ll-config-file", tracker_ll_config_file)
+        if key == "enable-batch-process" :
+            tracker_enable_batch_process = config.getint("tracker", key)
+            tracker.set_property("enable_batch_process", tracker_enable_batch_process)
+        if key == "enable-past-frame" :
+            tracker_enable_past_frame = config.getint("tracker", key)
+            tracker.set_property("enable_past_frame", tracker_enable_past_frame)
 
-    msgconv.set_property('config', MSCONV_CONFIG_FILE)
-    msgconv.set_property('payload-type', schema_type)
-    msgbroker.set_property('proto-lib', proto_lib)
-    msgbroker.set_property('conn-str', conn_str)
+    msgconv.set_property("config", MSCONV_CONFIG_FILE)
+    msgconv.set_property("payload-type", schema_type)
+    msgbroker.set_property("proto-lib", proto_lib)
+    msgbroker.set_property("conn-str", conn_str)
     if cfg_file is not None:
-        msgbroker.set_property('config', cfg_file)
+        msgbroker.set_property("config", cfg_file)
     if topic is not None:
-        msgbroker.set_property('topic', topic)
-    msgbroker.set_property('sync', False)
+        msgbroker.set_property("topic", topic)
+    msgbroker.set_property("sync", False)
 
     print("Adding elements to Pipeline \n")
     pipeline.add(source)
@@ -392,10 +385,10 @@ def main(args):
     pipeline.add(decoder)
     pipeline.add(streammux)
     pipeline.add(pgie)
-    # insert
+    
     pipeline.add(tracker)
     pipeline.add(nvanalytics)
-    # end insert
+    
     pipeline.add(nvvidconv)
     pipeline.add(nvosd)
     pipeline.add(tee)
@@ -435,7 +428,7 @@ def main(args):
     else:
         queue2.link(sink)
     sink_pad = queue1.get_static_pad("sink")
-    tee_msg_pad = tee.get_request_pad('src_%u')
+    tee_msg_pad = tee.get_request_pad("src_%u")
     tee_render_pad = tee.get_request_pad("src_%u")
     if not tee_msg_pad or not tee_render_pad:
         sys.stderr.write("Unable to get request pads\n")
@@ -454,15 +447,12 @@ def main(args):
     #     sys.stderr.write(" Unable to get sink pad of nvosd \n")
 
 
-    # osdsinkpad.add_probe(Gst.PadProbeType.BUFFER, osd_sink_pad_buffer_probe, 0)
 
     # custom insert  
     nvanalytics_src_pad=nvanalytics.get_static_pad("src")
     nvanalytics_src_pad.add_probe(Gst.PadProbeType.BUFFER, osd_sink_pad_buffer_probe, 0)
 
-    
-    # pgiesrcpad = pgie.get_static_pad("src")
-    # pgiesrcpad.add_probe(Gst.PadProbeType.BUFFER, osd_sink_pad_buffer_probe, 0)
+
 
 
     print("Starting pipeline \n")
@@ -526,7 +516,7 @@ def parse_args():
     schema_type = 0 if options.schema_type == "0" else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ret = parse_args()
     # If argument parsing fails, returns failure (non-zero)
     if ret == 1:

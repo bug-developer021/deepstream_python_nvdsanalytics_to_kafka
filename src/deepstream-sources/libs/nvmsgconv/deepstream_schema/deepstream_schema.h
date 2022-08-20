@@ -95,13 +95,8 @@ struct NvDsAnalyticsObject {
   string desc;
   string source;
   string version;
-  guint source_id;
   guint lc_curr_straight;
-  guint lc_curr_left;
-  guint lc_curr_right;
   guint lc_cum_straight;
-  guint lc_cum_left;
-  guint lc_cum_right;
 };
 
 struct NvDsPayloadPriv {

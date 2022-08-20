@@ -423,13 +423,8 @@ namespace pydeepstream {
                 .def_readwrite("extMsg", &NvDsEventMsgMeta::extMsg)
                 .def_readwrite("extMsgSize", &NvDsEventMsgMeta::extMsgSize)
                 
-                .def_readwrite("source_id", &NvDsEventMsgMeta::source_id)
                 .def_readwrite("lc_curr_straight", &NvDsEventMsgMeta::lc_curr_straight)
-                .def_readwrite("lc_curr_left", &NvDsEventMsgMeta::lc_curr_left)
-                .def_readwrite("lc_curr_right", &NvDsEventMsgMeta::lc_curr_right)
-                .def_readwrite("lc_cum_straight", &NvDsEventMsgMeta::lc_cum_straight)
-                .def_readwrite("lc_cum_left", &NvDsEventMsgMeta::lc_cum_left)
-                .def_readwrite("lc_cum_right", &NvDsEventMsgMeta::lc_cum_right);
+                .def_readwrite("lc_cum_straight", &NvDsEventMsgMeta::lc_cum_straight);
 
         m.def("alloc_nvds_event_msg_meta",
               []() {

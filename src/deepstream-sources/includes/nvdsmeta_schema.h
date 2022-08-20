@@ -277,13 +277,8 @@ typedef struct NvDsEventMsgMeta {
   /** Holds the size of the custom object at @a extMsg. */
   guint extMsgSize;
 
-  guint source_id;
   guint lc_curr_straight;
-  guint lc_curr_left;
-  guint lc_curr_right;
   guint lc_cum_straight;
-  guint lc_cum_left;
-  guint lc_cum_right;
 } NvDsEventMsgMeta;
 
 /**
