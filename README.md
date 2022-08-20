@@ -11,6 +11,7 @@
   - [Add analytics msg meta to NvDsEventMsgMeta](#add-analytics-msg-meta-to-nvdseventmsgmeta)
   - [Remake libnvds_msgconv.so](#remake-libnvdsmsgconvso)
   - [Build and install Python bindings](#build-and-install-python-bindings)
+- [References](#references)
 
 # Description
 The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not esay for python programmer who don't have enough time to figure out how to use it. In deepstream forums, the maintainer said deepstream python will support custom message payload feature in the future release.   
@@ -187,3 +188,10 @@ In L426 of `bindschema.cpp` , insert the following code before build deepstream 
   .def_readwrite("lc_cum_straight", &NvDsEventMsgMeta::lc_cum_straight);
 ```
 then build deepstream python bindings and pip install it, more install detail please refer to `/docker/Dockerfile`
+
+# References
+- [NVIDIA-AI-IOT/deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics)
+- [deepstream-test4](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/tree/master/apps/deepstream-test4)
+- [deepstream-nvdsanalytics](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/tree/master/apps/deepstream-nvdsanalytics)
+- [How do I change JSON payload output?](https://forums.developer.nvidia.com/t/how-do-i-change-json-payload-output/217386/4) 
+- [Problem with reading nvdsanalytics output via Kafka](https://forums.developer.nvidia.com/t/problem-with-reading-nvdsanalytics-output-via-kafka/154071)
