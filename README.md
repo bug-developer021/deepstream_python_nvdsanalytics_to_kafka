@@ -95,8 +95,8 @@ the deepstrem python pipeline architecture is as follows:
       "description" : "\"Vehicle Detection and License Plate Recognition\"",
       "source" : "OpenALR",
       "version" : "1.0",
-      "lc_curr_straight" : 1.0,
-      "lc_cum_straight" : 39.0
+      "lc_curr_straight" : 1,
+      "lc_cum_straight" : 39
     }
   }
   ```
@@ -127,8 +127,8 @@ In L232 of `nvdsmeta_schema.h`, insert custom analytics msg meta of `typedef str
   The most important step of cutstom your message payload. in  `nvmsgconv/deepstream_schema/eventmsg_payload`, your can insert your analytics msg meta in the `generate_analytics_module_object` function at L186:
   ```cpp
     // custom analytics data
-    json_object_set_double_member (analyticsObj, "lc_curr_straight", meta->lc_curr_straight);
-    json_object_set_double_member (analyticsObj, "lc_cum_straight", meta->lc_cum_straight);
+    json_object_set_int_member (analyticsObj, "lc_curr_straight", meta->lc_curr_straight);
+    json_object_set_int_member (analyticsObj, "lc_cum_straight", meta->lc_cum_straight);
   ```
 
   You can also comment some payload that your don't want to send to kafka. In `generate_event_message`  function at L536:

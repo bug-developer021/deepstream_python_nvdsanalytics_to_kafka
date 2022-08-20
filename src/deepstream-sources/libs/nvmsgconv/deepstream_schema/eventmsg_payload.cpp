@@ -219,8 +219,8 @@ generate_analytics_module_object (void *privData, NvDsEventMsgMeta *meta)
   json_object_set_string_member (analyticsObj, "version", dsObj->version.c_str());
   
   // custom analytics data
-  json_object_set_double_member (analyticsObj, "lc_curr_straight", meta->lc_curr_straight);
-  json_object_set_double_member (analyticsObj, "lc_cum_straight", meta->lc_cum_straight);
+  json_object_set_int_member (analyticsObj, "lc_curr_straight", meta->lc_curr_straight);
+  json_object_set_int_member (analyticsObj, "lc_cum_straight", meta->lc_cum_straight);
   return analyticsObj;
 }
 
