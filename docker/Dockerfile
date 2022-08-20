@@ -55,4 +55,5 @@ RUN cd /opt/nvidia/deepstream/deepstream/sources/deepstream_python_apps \
 WORKDIR /opt/nvidia/deepstream/deepstream-6.1/sources/deepstream_python_apps
 RUN pip3 install jupyter jupyterlab
 
-CMD jupyter-notebook  --notebook-dir=/opt/nvidia/deepstream/deepstream-6.1 --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' 
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["jupyter-notebook  --notebook-dir=/opt/nvidia/deepstream/deepstream-6.1/sources/deepstream_python_apps --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' "]

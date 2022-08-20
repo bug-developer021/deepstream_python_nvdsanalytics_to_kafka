@@ -43,7 +43,7 @@ If not , you should go back to modeify the C source code and build it. Since the
 
  - run the docker image and access jupyter  
     ```shell
-    docker run --gpus  device=0  -p 8888:8888 -it --rm --shm-size=1g  -w /opt/nvidia/deepstream/deepstream-6.1/sources/mount/   -v ~/deepstream_python_nvdsanalytics_to_kafka/:/opt/nvidia/deepstream/deepstream-6.1/sources/mount  deepstream:6.1-triton-jupyter-python-custom
+    docker run --gpus  device=0  -p 8888:8888 -d --shm-size=1g  -w /opt/nvidia/deepstream/deepstream-6.1/sources/deepstream_python_apps/mount/   -v ~/deepstream_python_nvdsanalytics_to_kafka/:/opt/nvidia/deepstream/deepstream-6.1/sources/deepstream_python_apps/mount  deepstream:6.1-triton-jupyter-python-custom
     ```
     type `http://<host_ip>:8888` on browser to access jupyter  
 
@@ -57,10 +57,13 @@ the deepstrem python pipeline architecture is as follows:
 
  - before running, set the `partion-key = deviceId` in `pyds_kafka_example/cfg_kafka.txt`, it will set partition-key by the deviceId of payload to be sent
 
+ - install java  
+   `apt update && apt install -y openjdk-11-jdk`
+
  - install kafka: [https://kafka.apache.org/quickstart] and create the kafka topic:
     ```shell
-    tar -xzf kafka_2.13-2.6.0.tgz
-    cd kafka_2.13-2.6.0
+    tar -xzf kafka_2.13-3.2.1.tgz
+    cd kafka_2.13-3.2.1
     bin/zookeeper-server-start.sh config/zookeeper.properties
     bin/kafka-server-start.sh config/server.properties
     bin/kafka-topics.sh --create --topic ds-kafka --bootstrap-server localhost:9092
@@ -74,24 +77,26 @@ the deepstrem python pipeline architecture is as follows:
 
 
 ## Consume messages
-  open an new ternimal to consume messages
 
   ```shell
+  # go to kafka_2.13-3.2.1 directory and run
   bin/kafka-console-consumer.sh --topic ds-kafka --from-beginning --bootstrap-server localhost:9092
   ```
 
   The output will look like this:
 
-
   ```json
   {
-    "messageid" : "b99617a2-226d-49fa-9f38-a23bf5de91cd",
-    "@timestamp" : "2022-08-12T06:50:59.006Z",
+    "messageid" : "34359fe1-fa36-4268-b6fc-a302dbab8be9",
+    "@timestamp" : "2022-08-20T09:05:01.695Z",
     "deviceId" : "device_test",
     "analyticsModule" : {
-      "stream_source_id" : 0,
-      "lc_curr_straight" : 0,
-      "lc_cum_straight" : 38
+      "id" : "XYZ",
+      "description" : "\"Vehicle Detection and License Plate Recognition\"",
+      "source" : "OpenALR",
+      "version" : "1.0",
+      "lc_curr_straight" : 1.0,
+      "lc_cum_straight" : 39.0
     }
   }
   ```
