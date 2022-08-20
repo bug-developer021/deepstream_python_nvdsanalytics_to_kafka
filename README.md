@@ -12,8 +12,11 @@
   - [Build and install Python bindings](#build-and-install-python-bindings)
 
 # Description
-The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not esay for python programmer who don't have enough time to figure out how to use it. In deepstream forums, the maintainer say deepstream python will support custom message payload feature in the future release.   
-By referring to [How do I change JSON payload output?](https://forums.developer.nvidia.com/t/how-do-i-change-json-payload-output/217386/4) and [Problem with reading nvdsanalytics output via Kafka](https://forums.developer.nvidia.com/t/problem-with-reading-nvdsanalytics-output-via-kafka/154071), I make some change of C source code,  insert custom `lc_curr_straight` and `lc_cum_straight` in NvDsEventMsgMeta and send to kafka. Then build the deepstream python bindings. The only thing to send line-crossing data is to assign analytics data to  `msg_meta.lc_curr_straight` and  `msg_meta.lc_cum_straight`, the key of dict is depend on nvdsanalytics config
+The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not esay for python programmer who don't have enough time to figure out how to use it. In deepstream forums, the maintainer said deepstream python will support custom message payload feature in the future release.   
+
+By referring to [How do I change JSON payload output?](https://forums.developer.nvidia.com/t/how-do-i-change-json-payload-output/217386/4) and [Problem with reading nvdsanalytics output via Kafka](https://forums.developer.nvidia.com/t/problem-with-reading-nvdsanalytics-output-via-kafka/154071), I make some changes of C source code,  insert custom `lc_curr_straight` and `lc_cum_straight` in NvDsEventMsgMeta and send to kafka. Then build the deepstream python bindings. 
+
+The only thing to send line-crossing data is to assign analytics data to  `msg_meta.lc_curr_straight` and  `msg_meta.lc_cum_straight`, the key of dict is depend on nvdsanalytics config
 
 ```python
 msg_meta.lc_curr_straight = obj_lc_curr_cnt["straight"]
@@ -21,6 +24,7 @@ msg_meta.lc_cum_straight = obj_lc_cum_cnt["straight"]
 ```
 
 Actually, There is a simple way to send custom meesages. If you don't need to process scale of video streams, or the latency is not important, you can use [kafka-python library](https://forums.developer.nvidia.com/t/how-to-build-a-custom-object-to-use-on-payloads-for-message-broker-with-python-bindings/171193) to send messages instead of use `nvmsgconv` and `nvmsgbroker`.   
+
 If not , you should go back to modeify the C source code and build it. Since the probe is a blocking operation, it is not suitable for complex processing. 
 
 
