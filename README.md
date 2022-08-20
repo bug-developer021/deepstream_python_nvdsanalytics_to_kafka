@@ -2,6 +2,7 @@
 
 # Contents  
 - [Description](#description)  
+- [Prerequisites](#prerequisites)
 - [How to run](#how-to-run)  
   - [Build and run docker images](#build-and-run-docker-images)
   - [Run deepstream python script](#run-deepstream-python-script)
@@ -27,6 +28,10 @@ Actually, There is a simple way to send custom meesages. If you don't need to pr
 
 If not , you should go back to modeify the C source code and build it. Since the probe is a blocking operation, it is not suitable for complex processing. 
 
+# Prerequisites
+- nvidia-docker2 
+- deepstream-6.1
+
 
 
 # How to run
@@ -47,15 +52,25 @@ If not , you should go back to modeify the C source code and build it. Since the
 
 ## Run deepstream python script
 the deepstream python pipeline of `/pyds_kafka_example/run.py` is base on `deepstream-test4` and `deepstream-nvdsanalytics`
+the deepstrem python pipeline architecture is as follows:
+![](./assets/ds-pipeline.svg)
 
  - before running, set the `partion-key = deviceId` in `pyds_kafka_example/cfg_kafka.txt`, it will set partition-key by the deviceId of payload to be sent
+
+ - install kafka: [https://kafka.apache.org/quickstart] and create the kafka topic:
+    ```shell
+    tar -xzf kafka_2.13-2.6.0.tgz
+    cd kafka_2.13-2.6.0
+    bin/zookeeper-server-start.sh config/zookeeper.properties
+    bin/kafka-server-start.sh config/server.properties
+    bin/kafka-topics.sh --create --topic ds-kafka --bootstrap-server localhost:9092
+    ```
 
  - cd `pyds_kafka_example` path and run the python script, e.g:
     ```shell
     python3 run.py -i /opt/nvidia/deepstream/deepstream-6.1/samples/streams/sample_720p.h264 -p /opt/nvidia/deepstream/deepstream-6.1/lib/libnvds_kafka_proto.so --conn-str="localhost;9092;ds-kafka" -s 0 --no-display
     ```
-    the deepstrem python pipeline architecture is as follows:
-    ![](./assets/ds-pipeline.svg)
+
 
 
 ## Consume messages
