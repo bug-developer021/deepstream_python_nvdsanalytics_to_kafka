@@ -1,4 +1,5 @@
 # Send analytics data to kafka use deepstream python
+English | [Zh-CN](README_CN.md) 
 
 # Contents  
 - [Description](#description)  
@@ -21,9 +22,14 @@ By referring to [How do I change JSON payload output?](https://forums.developer.
 The only thing to send line-crossing data is to assign analytics data to  `msg_meta.lc_curr_straight` and  `msg_meta.lc_cum_straight`, the key of dict is depend on nvdsanalytics config
 
 ```python
+# line crossing current count of frame
+obj_lc_curr_cnt = user_meta_data.objLCCurrCnt
+# line crossing cumulative count
+obj_lc_cum_cnt = user_meta_data.objLCCumCnt
 msg_meta.lc_curr_straight = obj_lc_curr_cnt["straight"]
 msg_meta.lc_cum_straight = obj_lc_cum_cnt["straight"] 
 ```
+> the keys of obj_lc_curr_cnt and obj_lc_cum_cnt are defined in config_nvdsanalytics.txt
 
 Actually, There is a simple way to send custom meesages. If you don't need to process scale of video streams, or the latency is not important, you can use [kafka-python library](https://forums.developer.nvidia.com/t/how-to-build-a-custom-object-to-use-on-payloads-for-message-broker-with-python-bindings/171193) to send messages instead of use `nvmsgconv` and `nvmsgbroker`.   
 
@@ -39,7 +45,7 @@ If not , you should go back to modeify the C source code and build it. Since the
 **If you want custom you own messages, you can refer to [Details](#details)**
 
 ## Build  and run docker images   
- - clone this repo, in deepstream_python_nvdsanalytics_to_kafka workpace, run `sh docker/build.sh <image_name>` to build a docker image, e.g:
+ - clone this repo, in `deepstream_python_nvdsanalytics_to_kafka` directory, run `sh docker/build.sh <image_name>` to build a docker image, e.g:
 `sh docker/build.sh  deepstream:6.1-triton-jupyter-python-custom`
 
  - run the docker image and access jupyter  
@@ -125,9 +131,10 @@ In L232 of `nvdsmeta_schema.h`, insert custom analytics msg meta of `typedef str
   ```
 
 - eventmsg_payload  
-  The most important step of cutstom your message payload. in  `nvmsgconv/deepstream_schema/eventmsg_payload`, your can insert your analytics msg meta in the `generate_analytics_module_object` function at L186:
+  The most important step of cutstom your message payload. in  `nvmsgconv/deepstream_schema/eventmsg_payload.cpp`, your can insert your analytics msg meta in the `generate_analytics_module_object` function at L186:
   ```cpp
     // custom analytics data
+    // json_object_set_int_member (analyticsObj, <the key of your msg to be send>, <corresponding value>);
     json_object_set_int_member (analyticsObj, "lc_curr_straight", meta->lc_curr_straight);
     json_object_set_int_member (analyticsObj, "lc_cum_straight", meta->lc_cum_straight);
   ```
