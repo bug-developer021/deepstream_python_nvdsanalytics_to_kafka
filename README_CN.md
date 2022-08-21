@@ -16,11 +16,22 @@ Zh-CN | [English](README.md)
 
 
 # 概述
-[deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics)项目提供了一种往kafka发送analytics统计数据的方法。但是所有的改动，特别是主程序是用C语言开发的。综合[参考文档](#参考文档)，本项目以跨线统计为例，提供了一种python版本发送统计数据的方法，同时详细说明了需要改动和编译哪些C程序以及deepstream python bindings。可以参考[主要改动](#主要改动)定制化自己想要收集并发送的数据内容和格式。
+[deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics)项目提供了一种往kafka发送analytics统计数据的方法。但是所有的改动，特别是主程序是用C语言开发的。但写这篇文章的时候，在网上还没发现官方系统性的说明和解释，都是一些零碎的问答。
+
+因此综合[参考文档](#参考文档)，以跨线统计为例，本项目提供了一种python版本发送统计数据的方法，同时详细说明了需要改动和编译哪些C程序以及deepstream python bindings。可以参考[主要改动](#主要改动)定制化自己想要收集并发送的数据内容和格式。
+
+改动的地方不多，但对于没接触过C语言的人来说，需要花费一些时间，因此下面记录了探索的过程。
 
 > 论坛上有人回复说，在以后的release中，将会提供基于deepstream python发送自定义数据的功能
 
-主要改动为：将自定义的`lc_curr_straight`和`lc_cum_straight`追加到NvDsEventMsgMeta结构里，同时[修改eventmsg_payloadc程序](#编译libnvdsmsgconvso)，编译产生libnvds_msgconv.so, 同步更改bindschema后，只需要在python程序中加入如下代码即可发送自定义的统计数据：
+主要改动可分为三方面：
+
+ 1. [将自定义的数据结构追加到NvDsEventMsgMeta](#在nvdseventmsgmeta结构里添加analytics-msg-meta)，例如将`lc_curr_straight`和`lc_cum_straight`加入
+ 2. [修改eventmsg_payload程序](#编译libnvdsmsgconvso)，编译产生`libnvds_msgconv.so`
+ 3. [同步更改bindschema.cpp](#编译python-bindings), 编译deepstream python bindings
+
+最后只需要在python程序中加入如下代码即可发送自定义的统计数据：
+
 ```python
 # line crossing current count of frame
 obj_lc_curr_cnt = user_meta_data.objLCCurrCnt
@@ -32,7 +43,7 @@ msg_meta.lc_cum_straight = obj_lc_cum_cnt["straight"]
 > obj_lc_curr_cnt和obj_lc_cum_cnt的key在config_nvdsananlytics.txt中定义
 
 还有一种更简单的方案。如果场景需求中，时延并不重要，也不需要同时处理大规模视频流的话，可以考虑使用[`kafka-python`](https://forums.developer.nvidia.com/t/how-to-build-a-custom-object-to-use-on-payloads-for-message-broker-with-python-bindings/171193) 等python库，直接将获取到的analytics发送出去，不经过`nvmsgconv`和`nvmsgbroker`这两个插件。
-如果时延重要，或者要处理大规模视频流，则需要微调一下C的源代码，重新编译，因为探针函数是阻塞的，并不适合在里面加入复杂的处理逻辑。
+如果时延重要，或者要处理大规模视频流，则需要参考下文微调一下C的源代码，重新编译，因为探针函数是阻塞的，并不适合在里面加入复杂的处理逻辑。
 
 
 # 运行环境
@@ -149,7 +160,7 @@ pipeline主要结构如下:
   ```
 
 
-  在536行`generate_event_message`函数中，可以注释无效的消息，降低发送消息的大小
+  在536行`generate_event_message`函数中，可以注释无效的消息，减小发送消息的大小
 
   ```cpp
   // // place object

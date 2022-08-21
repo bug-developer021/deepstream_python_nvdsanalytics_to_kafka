@@ -15,11 +15,18 @@ English | [Zh-CN](README_CN.md)
 - [References](#references)
 
 # Description
-The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not esay for python programmer who don't have enough time to figure out how to use it. In deepstream forums, the maintainer said deepstream python will support custom message payload feature in the future release.   
+The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not esay for python programmer who don't have enough time to figure out how to use it. 
 
 By referring to [How do I change JSON payload output?](https://forums.developer.nvidia.com/t/how-do-i-change-json-payload-output/217386/4) and [Problem with reading nvdsanalytics output via Kafka](https://forums.developer.nvidia.com/t/problem-with-reading-nvdsanalytics-output-via-kafka/154071), I make some changes of C source code,  insert custom `lc_curr_straight` and `lc_cum_straight` in NvDsEventMsgMeta and send to kafka. Then build the deepstream python bindings. 
 
-The only thing to send line-crossing data is to assign analytics data to  `msg_meta.lc_curr_straight` and  `msg_meta.lc_cum_straight`, the key of dict is depend on nvdsanalytics config
+> In deepstream forums, the maintainer replied that deepstream python will support custom message payload feature in the future release.   
+
+the main steps as follows:
+1. [Add analytics msg meta to NvDsEventMsgMeta](#add-analytics-msg-meta-to-nvdseventmsgmeta)
+2. [modify eventmsg_payload.cpp and remake libnvds_msgconv.so](#remake-libnvdsmsgconvso)
+3. [Build and install Python bindings](#build-and-install-python-bindings)
+
+After that, the only thing to send line-crossing data is to assign analytics data to  `msg_meta.lc_curr_straight` and  `msg_meta.lc_cum_straight`, the key of dict is depend on nvdsanalytics config
 
 ```python
 # line crossing current count of frame
