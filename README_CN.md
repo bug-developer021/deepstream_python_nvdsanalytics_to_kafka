@@ -24,7 +24,7 @@ Zh-CN | [English](README.md)
 
 > 论坛上有人回复说，在以后的release中，将会提供基于deepstream python发送自定义数据的功能
 
-主要改动可分为三方面：
+主要改动分为三点：
 
  1. [将自定义的数据结构追加到NvDsEventMsgMeta](#在nvdseventmsgmeta结构里添加analytics-msg-meta)，例如将`lc_curr_straight`和`lc_cum_straight`加入
  2. [修改eventmsg_payload程序](#编译libnvds_msgconvso)，编译产生`libnvds_msgconv.so`
