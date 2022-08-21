@@ -168,11 +168,11 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
                     if user_meta_data.objLCCumCnt: print("Linecrossing Cumulative: {0}".format(user_meta_data.objLCCumCnt))
                     if user_meta_data.objLCCurrCnt: print("Linecrossing Current Frame: {0}".format(user_meta_data.objLCCurrCnt))
 
-
-                    # linecrossing cumulative
-                    obj_lc_cum_cnt = user_meta_data.objLCCumCnt
-                    # linecrossing current frame
+                    # line crossing current count of frame
                     obj_lc_curr_cnt = user_meta_data.objLCCurrCnt
+                    # line crossing cumulative count 
+                    obj_lc_cum_cnt = user_meta_data.objLCCumCnt
+
 
             
                     # Ideally NVDS_EVENT_MSG_META should be attached to buffer by the

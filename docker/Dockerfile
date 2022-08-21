@@ -9,21 +9,18 @@ COPY docker/sources.list /etc/apt/sources.list
 
 RUN apt-get update
 # Install required dependencies
-RUN apt-get install -yq --no-install-recommends \
+RUN apt-get update \
+    && apt-get install -yq --no-install-recommends \
     # ffmpeg \
     python3-gst-1.0 \
     python3-gi \
     python-gi-dev \
     python3-opencv \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-
-
+    && apt-get clean  \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN cd /opt/nvidia/deepstream/deepstream/sources \
     && git clone https://github.com/NVIDIA-AI-IOT/deepstream_python_apps.git 
-
 
 
 COPY src/deepstream-sources/includes/nvdsmeta_schema.h /opt/nvidia/deepstream/deepstream/sources/includes/nvdsmeta_schema.h
