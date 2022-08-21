@@ -10,7 +10,7 @@ Zh-CN | [English](README.md)
   - [消费kafka数据](#消费kafka数据)
 - [主要改动](#主要改动)
   - [在NvDsEventMsgMeta结构里添加analytics msg meta](#在nvdseventmsgmeta结构里添加analytics-msg-meta)
-  - [编译libnvds_msgconv.so](#编译libnvdsmsgconvso )
+  - [编译libnvds_msgconv.so](#编译libnvdsmsgconvso)
   - [编译Python bindings](#编译python-bindings)
 - [参考文档](#参考文档)
 

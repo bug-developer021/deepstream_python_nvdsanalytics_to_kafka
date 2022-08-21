@@ -127,7 +127,7 @@ In L232 of `nvdsmeta_schema.h`, insert custom analytics msg meta of `typedef str
   guint lc_cum_straight;
 ```
 
-## Remake `libnvds_msgconv.so`  
+## Remake libnvds_msgconv.so 
 
 - deepstream_schema  
   In `/opt/nvidia/deepstream/deepstream/sources/libs/nvmsgconv`, add same analytics msg meta  in `nvmsgconv/deestream_schema/deepstream_schema.h` at L93 of `struct NvDsAnalyticsObject`
