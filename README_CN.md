@@ -10,7 +10,7 @@ Zh-CN | [English](README.md)
   - [消费kafka数据](#消费kafka数据)
 - [主要改动](#主要改动)
   - [在NvDsEventMsgMeta结构里添加analytics msg meta](#在nvdseventmsgmeta结构里添加analytics-msg-meta)
-  - [编译libnvds_msgconv.so](#编译libnvdsmsgconvso)
+  - [编译libnvds_msgconv.so](#编译libnvds_msgconvso)
   - [编译Python bindings](#编译python-bindings)
 - [参考文档](#参考文档)
 
@@ -27,7 +27,7 @@ Zh-CN | [English](README.md)
 主要改动可分为三方面：
 
  1. [将自定义的数据结构追加到NvDsEventMsgMeta](#在nvdseventmsgmeta结构里添加analytics-msg-meta)，例如将`lc_curr_straight`和`lc_cum_straight`加入
- 2. [修改eventmsg_payload程序](#编译libnvdsmsgconvso)，编译产生`libnvds_msgconv.so`
+ 2. [修改eventmsg_payload程序](#编译libnvds_msgconvso)，编译产生`libnvds_msgconv.so`
  3. [同步更改bindschema.cpp](#编译python-bindings), 编译deepstream python bindings
 
 最后只需要在python程序中加入如下代码即可发送自定义的统计数据：

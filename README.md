@@ -10,7 +10,7 @@ English | [Zh-CN](README_CN.md)
   - [Consume messages](#consume-messages)
 - [Details](#details)
   - [Add analytics msg meta to NvDsEventMsgMeta](#add-analytics-msg-meta-to-nvdseventmsgmeta)
-  - [Remake libnvds_msgconv.so](#remake-libnvdsmsgconvso)
+  - [Remake libnvds_msgconv.so](#remake-libnvds_msgconvso)
   - [Build and install Python bindings](#build-and-install-python-bindings)
 - [References](#references)
 
@@ -23,7 +23,7 @@ By referring to [How do I change JSON payload output?](https://forums.developer.
 
 the main steps as follows:
 1. [Add analytics msg meta to NvDsEventMsgMeta](#add-analytics-msg-meta-to-nvdseventmsgmeta)
-2. [modify eventmsg_payload.cpp and remake libnvds_msgconv.so](#remake-libnvdsmsgconvso)
+2. [modify eventmsg_payload.cpp and remake libnvds_msgconv.so](#remake-libnvds_msgconvso)
 3. [Build and install Python bindings](#build-and-install-python-bindings)
 
 After that, the only thing to send line-crossing data is to assign analytics data to  `msg_meta.lc_curr_straight` and  `msg_meta.lc_cum_straight`, the key of dict is depend on nvdsanalytics config
