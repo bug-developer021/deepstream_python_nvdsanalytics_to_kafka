@@ -15,7 +15,7 @@ English | [Zh-CN](README_CN.md)
 - [References](#references)
 
 # Description
-The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not esay for python programmer who don't have enough time to figure out how to use it. 
+The [deepstream-occupancy-analytics](https://github.com/NVIDIA-AI-IOT/deepstream-occupancy-analytics) repo provides a method to send analytics data to kafka, but it is C version. It's not easy for python programmers who don't have enough time to figure out how to use it. 
 
 By referring to [How do I change JSON payload output?](https://forums.developer.nvidia.com/t/how-do-i-change-json-payload-output/217386/4) and [Problem with reading nvdsanalytics output via Kafka](https://forums.developer.nvidia.com/t/problem-with-reading-nvdsanalytics-output-via-kafka/154071), I make some changes of C source code,  insert custom `lc_curr_straight` and `lc_cum_straight` in `NvDsEventMsgMeta` and send to kafka. Then build the deepstream python bindings. 
 
